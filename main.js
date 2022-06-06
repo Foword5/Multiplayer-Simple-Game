@@ -6,7 +6,9 @@ var ctx;
 var canva;
 var gaming;
 var players = [];
-const ws = new WebSocket('ws://localhost:8080');
+
+const port = process.env.port || 5000;
+const ws = new WebSocket('ws://localhost:'+port);
 
 function clear(){
     ctx.fillStyle = "darkgray";
