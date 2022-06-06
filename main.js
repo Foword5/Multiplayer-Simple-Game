@@ -7,9 +7,6 @@ var canva;
 var gaming;
 var players = [];
 
-const port = process.env.port || 5000;
-const ws = new WebSocket('ws://localhost:'+port);
-
 function clear(){
     ctx.fillStyle = "darkgray";
     ctx.fillRect(0,0,canva.width,canva.height);
@@ -65,10 +62,8 @@ function init(){
     
     ws.onmessage = function message(data) {
         data = JSON.parse(data.data);
-        if(data.killPlayer){
-            console.log("killing dudes");
-            players = [];
-        }else
+        if(data.killPlayer) players = [];
+        else
             if(data.playerId != perso.id){
                 newPlayer = true;
                 players.forEach((player)=>{
