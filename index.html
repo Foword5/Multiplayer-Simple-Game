@@ -11,18 +11,199 @@
             var ws = new WebSocket(HOST);
         </script>
         <script>
-            path = (location+"").replace(":3000", '');
-            ["function","character","players","main"].forEach((file)=>{
-                script = document.createElement("script");
-                script.setAttribute("src",path+file+".js");
-                document.body.appendChild(script);
-            })
-            path = "https://foword5.github.io/Stupid_Game_Multiplayer/";
-            ["function","character","players","main"].forEach((file)=>{
-                script = document.createElement("script");
-                script.setAttribute("src",path+file+".js");
-                document.body.appendChild(script);
-            })
+            // path = (location+"").replace(":3000", '');
+            // ["function","character","players","main"].forEach((file)=>{
+            //     script = document.createElement("script");
+            //     script.setAttribute("src",path+file+".js");
+            //     document.body.appendChild(script);
+            // })
+
+            function getRandomInt(max) {
+                return Math.floor(Math.random() * max);
+            }
+
+            function drawcube(ctx,parx,pary,parsize,color){
+                ctx.fillStyle = color;
+                ctx.fillRect(parx,pary,parsize,parsize);
+            }
+
+            function sleep(delay) {
+                var start = new Date().getTime();
+                while (new Date().getTime() < start + delay);
+            }
+
+            class player {
+                constructor(id,x,y){
+                    this.id = id;
+                    this.x = x;
+                    this.y = y;
+                }
+
+                //getter
+                getX = () => this.x;
+                getY = () => this.y;
+                getId = () => this.id;
+
+                //setter
+                setY = (y) => {this.y = y};
+                setX = (x) => {this.x = x};
+            }
+
+            class main_character {
+                constructor(canvasHeight,canvasWidth,id){
+                    this.x = 250;
+                    this.y = 250;
+                    this.size = 25;
+
+                    this.vecposx = 0;
+                    this.vecposy = 0;
+                    this.vecnegx = 0;
+                    this.vecnegy = 0;
+
+                    this.speed = 15;
+
+                    this.id = id;
+                    
+                    this.canvasHeight = canvasHeight;
+                    this.canvasWidth = canvasWidth;
+                }
+
+                keydown(input){
+                    this.e = input || window.event;
+                    this.e = this.e.keyCode;
+                    if(this.e == 90)
+                        this.vecnegy = -this.speed;
+                    else if(this.e == 83)
+                        this.vecposy = this.speed;
+
+                    if(this.e == 81 )
+                        this.vecnegx = -this.speed;
+                    else if(this.e == 68)
+                        this.vecposx = this.speed;
+                    
+                }
+                
+                keyup(input){
+                    this.e = input || window.event;
+                    this.e = this.e.keyCode;
+                    if(this.e == 90)
+                        this.vecnegy = 0;
+                    else if(this.e == 83)
+                        this.vecposy = 0;
+
+                    if(this.e == 81 )
+                        this.vecnegx = 0;
+                    else if(this.e == 68)
+                        this.vecposx = 0;
+                }
+
+                move(){
+                    if(this.vecnegx && this.vecposx){}
+                    else if(this.x-this.speed >= 0 && this.vecnegx)
+                        this.x += this.vecnegx;
+                    else if(this.x+this.size+this.speed <= this.canvasWidth && this.vecposx)
+                        this.x += this.vecposx;
+                    
+                    if(this.vecnegy && this.vecposy){}
+                    else if(this.y-this.speed >= 0 && this.vecnegy)
+                        this.y += this.vecnegy;
+                    else if(this.y+this.size+this.speed <= this.canvasHeight && this.vecposy)
+                        this.y += this.vecposy;
+                }
+
+                draw(ctx){
+                    drawcube(ctx,this.x,this.y,this.size,"black");
+                }
+
+                //getter
+                getX = () => this.x;
+                getY = () => this.y;
+                getSize = () => this.size;
+                getId = () => this.id;
+
+                //setter
+                setSpeed = (speed) => {this.speed = speed};
+            }
+
+            window.onload = init;
+
+            const frameRate = 35;
+
+            var ctx;
+            var canva;
+            var gaming;
+            var players = [];
+
+            function clear(){
+                ctx.fillStyle = "darkgray";
+                ctx.fillRect(0,0,canva.width,canva.height);
+            }
+
+            function drawPlayers(ctx,players,main_char){
+                players.forEach((player)=>{
+                    if(main_char.getId() != player.getId()){
+                        drawcube(ctx,player.x,player.y,25,"red");
+                    }
+                })
+            }
+
+            function sendPosition(ws){
+                message = {
+                    killPlayer:false,
+                    playerId:perso.getId(),
+                    x:perso.getX(),
+                    y:perso.getY()
+                }
+                ws.send(JSON.stringify(message));
+            }
+
+            function game(){
+                clear();
+                drawPlayers(ctx,players,perso);
+                perso.move();
+                perso.draw(ctx);
+                sendPosition(ws)
+            }
+
+            function init(){
+                //setting the basics for drawing
+                canva = document.getElementById("canvas");
+                ctx = canva.getContext('2d');
+
+                //creating the main caracter
+                perso = new main_character(canva.height,canva.width,getRandomInt(9999999999));
+                document.addEventListener('keydown', function(){perso.keydown()});
+                document.addEventListener('keyup', function(){perso.keyup()});
+                
+                gaming = setInterval(game, frameRate);
+
+                ws.onopen = function open() {
+                    message = {
+                        killPlayer:false,
+                        playerId:perso.getId(),
+                        x:perso.getX(),
+                        y:perso.getY()
+                    };
+                    ws.send(JSON.stringify(message));
+                };
+                
+                ws.onmessage = function message(data) {
+                    data = JSON.parse(data.data);
+                    if(data.killPlayer) players = [];
+                    else
+                        if(data.playerId != perso.id){
+                            newPlayer = true;
+                            players.forEach((player)=>{
+                                if(player.getId() == data.playerId){
+                                    player.setX(data.x);
+                                    player.setY(data.y);
+                                    newPlayer = false;
+                                }
+                            })
+                            if(newPlayer) players.push(new player(data.playerId,data.x,data.y))
+                        }
+                };
+            }
         </script>
     </body>
 </html>
