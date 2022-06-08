@@ -1,5 +1,5 @@
 class main_character {
-    constructor(canvasHeight,canvasWidth,id){
+    constructor(canvasHeight,canvasWidth,id,color){
         this.x = 250;
         this.y = 250;
         this.size = 25;
@@ -13,6 +13,8 @@ class main_character {
 
         this.id = id;
         
+        this.color = color;
+
         this.canvasHeight = canvasHeight;
         this.canvasWidth = canvasWidth;
     }
@@ -61,7 +63,8 @@ class main_character {
     }
 
     draw(ctx){
-        drawcube(ctx,this.x,this.y,this.size,"black");
+        drawcube(ctx,this.x,this.y,this.size,this.color);
+        
     }
 
     //getter
@@ -69,6 +72,7 @@ class main_character {
     getY = () => this.y;
     getSize = () => this.size;
     getId = () => this.id;
+    getColor = () => this.color;
 
     //setter
     setSpeed = (speed) => {this.speed = speed};

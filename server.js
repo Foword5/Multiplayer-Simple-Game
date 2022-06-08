@@ -9,7 +9,9 @@ const FILES = //Any files refered to in the client
         '/function.js',
         '/character.js',
         '/players.js',
-        '/main.js'
+        '/main.js',
+        '/const.js',
+        '/sprites/you.png'
     ];
 
 //We use a String so the server is set in only one command, cause for some reason it doesn't work if it's done on multiple lines ¯\_(ツ)_/¯
@@ -34,17 +36,57 @@ const server = eval(serverSTR);
 
 const wss = new WebSocket.Server({ server });
 
+var players = [];
+
 //This is where the fun begins
+
+function getRandomInt(max) {
+    return Math.floor(Math.random() * max);
+}
+
+function sleep(delay) {
+    var start = new Date().getTime();
+    while (new Date().getTime() < start + delay);
+}
+
+players = [];
+
 wss.on('connection', function connection(ws) {
     ws.on('message', function message(data) {
-        wss.clients.forEach((client) => {
-            client.send(`${data}`)
-        })
+        analyse = JSON.parse(data);
+        switch(analyse.type){
+            case "newPlayer":
+                do{id=getRandomInt(9999999999)}while (players.find(element => element.id == id) != undefined);
+                players.push({id:id,time:new Date().getTime()});
+                msg=
+                {
+                    type:"start",
+                    wsId:analyse.wsId,
+                    playerId: id
+                }
+                wss.clients.forEach((client) => {
+                    client.send(JSON.stringify(msg));
+                });
+                players.push();
+                break;
+            case "movePlayer":
+                try{players.find(element => element.id == analyse.playerId).time = new Date().getTime();}catch(e){}
+                wss.clients.forEach((client) => {
+                    client.send(`${data}`)
+                });
+                break;
+            default: 
+                wss.clients.forEach((client) => {
+                    client.send(`${data}`)
+                });
+                break;
+        }
     });
     ws.on('close', function close() {
         wss.clients.forEach((client) => {
-            message = {killPlayer:true};
-            client.send(JSON.stringify(message));
+            wss.clients.forEach((client) => {
+                client.send(JSON.stringify({type:"kill"}));
+            });
         })
     });
 });
