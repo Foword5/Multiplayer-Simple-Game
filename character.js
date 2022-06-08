@@ -1,19 +1,19 @@
 class main_character {
-    constructor(canvasHeight,canvasWidth,id,color){
+    constructor(canvasHeight,canvasWidth,id,color,image){
         this.x = 250;
         this.y = 250;
         this.size = 25;
+        this.speed = 15;
 
         this.vecposx = 0;
         this.vecposy = 0;
         this.vecnegx = 0;
         this.vecnegy = 0;
 
-        this.speed = 15;
-
         this.id = id;
         
         this.color = color;
+        this.image = image;
 
         this.canvasHeight = canvasHeight;
         this.canvasWidth = canvasWidth;
@@ -64,7 +64,7 @@ class main_character {
 
     draw(ctx){
         drawcube(ctx,this.x,this.y,this.size,this.color);
-        
+        drawImage(ctx,this.image,this.x,this.y-25);
     }
 
     //getter

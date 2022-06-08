@@ -20,6 +20,7 @@ function drawPlayers(ctx,players,main_char){
     players.forEach((player)=>{
         if(main_char.getId() != player.getId()){
             drawcube(ctx,player.getX(),player.getY(),25,player.getColor());
+            drawImage(ctx,player_image,player.getX(),player.getY());
         }
     })
 }
@@ -57,6 +58,9 @@ function init(){
     canva = document.getElementById("canvas");
     ctx = canva.getContext('2d');
     
+    you_image = document.getElementById("you");
+    player_image = document.getElementById("player");
+
     gaming = setInterval(game, frameRate);
     
     ws.onmessage = function message(data) {
@@ -67,7 +71,7 @@ function init(){
                 break;
             case "start": 
                 if(!perso && data.wsId == wsId){
-                    perso = new main_character(canva.height,canva.width,data.playerId,COLORS[getRandomInt(COLORS.length)]);
+                    perso = new main_character(canva.height,canva.width,data.playerId,COLORS[getRandomInt(COLORS.length)],you_image);
                     document.addEventListener('keydown', function(){perso.keydown()});
                     document.addEventListener('keyup', function(){perso.keyup()});
                 }

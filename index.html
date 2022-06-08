@@ -6,6 +6,9 @@
     </head>
     <body>
         <canvas width="800px" height="800px" id="canvas"></canvas>
+        <img src="sprites/you.png" id="you"/>
+        <img src="sprites/player.png" id="player"/>
+
         <script>
             //connect to the server
             var HOST = location.origin.replace(/^http/, 'ws');
@@ -17,4 +20,9 @@
         <script src="players.js"></script>
         <script src="main.js"></script>
     </body>
+    <style>
+        img{
+            display: none;
+        }
+    </style>
 </html>
