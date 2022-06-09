@@ -12,7 +12,8 @@ const FILES = //Any files refered to in the client
         '/main.js',
         '/const.js',
         '/sprites/you.png',
-        '/sprites/player.png'
+        '/sprites/player.png',
+        '/coin.js'
     ];
 
 //We use a String so the server is set in only one command, cause for some reason it doesn't work if it's done on multiple lines ¯\_(ツ)_/¯
@@ -34,7 +35,6 @@ serverSTR +=
 .listen(${PORT}, () => console.log(\`Listening on ${PORT}\`));`
 
 const server = eval(serverSTR);
-
 const wss = new WebSocket.Server({ server });
 
 var players = [];
@@ -45,12 +45,21 @@ function getRandomInt(max) {
     return Math.floor(Math.random() * max);
 }
 
-function sleep(delay) {
-    var start = new Date().getTime();
-    while (new Date().getTime() < start + delay);
+var players = [];
+var coinCoords = {
+    x:getRandomInt(680)+50,
+    y:getRandomInt(680)+50
 }
 
-players = [];
+function checkForDeadPlayers(){
+    updatePlayers= [];
+    for(i=0;i<players.length;i++)
+        if(!(players[i].timer < new Date().getTime()-1000))
+            updatePlayers.push(players[i]);
+    players = updatePlayers
+        
+}
+setInterval(checkForDeadPlayers, 1000);
 
 wss.on('connection', function connection(ws) {
     ws.on('message', function message(data) {
@@ -58,20 +67,46 @@ wss.on('connection', function connection(ws) {
         switch(analyse.type){
             case "newPlayer":
                 do{id=getRandomInt(9999999999)}while (players.find(element => element.id == id) != undefined);
-                players.push({id:id,time:new Date().getTime()});
-                msg=
-                {
+                players.push({id:id,score:0,pseudo:analyse.pseudo,timer:new Date().getTime()});
+                msg={
                     type:"start",
                     wsId:analyse.wsId,
-                    playerId: id
+                    playerId: id,
+                    coinX:coinCoords.x,
+                    coinY:coinCoords.y
+                }
+                update={
+                    type:"updateScore",
+                    info:players
                 }
                 wss.clients.forEach((client) => {
                     client.send(JSON.stringify(msg));
+                    client.send(`${JSON.stringify(update)}`);
                 });
                 players.push();
                 break;
+            case "touchCoin":
+                try{players.find(element => element.id == analyse.playerId).score++}catch(e){};
+                coinCoords = {
+                    x:getRandomInt(680)+50,
+                    y:getRandomInt(680)+50
+                }
+                update={
+                    type:"updateScore",
+                    info:players
+                }
+                move={
+                    type:"moveCoin",
+                    x:coinCoords.x,
+                    y:coinCoords.y
+                }
+                wss.clients.forEach((client) => {
+                    client.send(`${JSON.stringify(update)}`);
+                    client.send(`${JSON.stringify(move)}`);
+                });
+                break;
             case "movePlayer":
-                try{players.find(element => element.id == analyse.playerId).time = new Date().getTime();}catch(e){}
+                try{players.find(element => element.id == analyse.playerId).timer = new Date().getTime();}catch(e){}
                 wss.clients.forEach((client) => {
                     client.send(`${data}`)
                 });

@@ -3,12 +3,17 @@
     <head>
         <meta charset="UTF-8">
         <title>Stupid Game Online</title>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
     </head>
     <body>
-        <canvas width="800px" height="800px" id="canvas"></canvas>
+        <div id="choose">
+            <input type="text" id="pseudo">
+            <button type="button" id="submit">Rejoindre</button>
+        </div>
+
         <img src="sprites/you.png" id="you"/>
         <img src="sprites/player.png" id="player"/>
-
+        
         <script>
             //connect to the server
             var HOST = location.origin.replace(/^http/, 'ws');
@@ -17,12 +22,22 @@
         <script src="const.js"></script>
         <script src="function.js"></script>
         <script src="character.js"></script>
+        <script src="coin.js"></script>
         <script src="players.js"></script>
         <script src="main.js"></script>
     </body>
     <style>
         img{
             display: none;
+        }
+        #game, #myscore {
+            font-size: 20px
+        }
+        #game{
+            display: flex;
+        }
+        body {
+            font-family: 'Roboto', sans-serif;
         }
     </style>
 </html>
