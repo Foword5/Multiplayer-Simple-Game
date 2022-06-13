@@ -15,6 +15,9 @@ class main_character {
         this.color = color;
         this.image = image;
 
+        this.touchedCoinTimer = 0;
+        this.touchedCoin = false;
+
         this.canvasHeight = canvasHeight;
         this.canvasWidth = canvasWidth;
     }
@@ -63,8 +66,17 @@ class main_character {
     }
 
     draw(ctx){
+        if(this.touchedCoin)
+            if(this.touchedCoinTimer > new Date().getTime()-200)
+                drawcube(ctx,this.x-5,this.y-5,this.size+10,"yellow");
+            else this.touchedCoin = false;
         drawcube(ctx,this.x,this.y,this.size,this.color);
         drawImage(ctx,this.image,this.x,this.y-25);
+    }
+
+    justTouchedCoin(){
+        this.touchedCoinTimer = new Date().getTime();
+        this.touchedCoin = true;
     }
 
     //getter

@@ -96,9 +96,10 @@ wss.on('connection', function connection(ws) {
                     info:players
                 }
                 move={
-                    type:"moveCoin",
+                    type:"coinTouched",
                     x:coinCoords.x,
-                    y:coinCoords.y
+                    y:coinCoords.y,
+                    playerId:analyse.playerId
                 }
                 wss.clients.forEach((client) => {
                     client.send(`${JSON.stringify(update)}`);

@@ -16,6 +16,7 @@ class coin {
                 playerId:main_char.getId()
             };
             ws.send(JSON.stringify(msg));
+            main_char.justTouchedCoin();
         }
     }
 

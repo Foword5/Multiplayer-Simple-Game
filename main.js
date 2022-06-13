@@ -16,12 +16,9 @@ function clear(){
     ctx.fillRect(0,0,canva.width,canva.height);
 }
 
-function drawPlayers(ctx,players,main_char){
+function drawPlayers(ctx,players){
     players.forEach((player)=>{
-        if(main_char.getId() != player.getId()){
-            drawcube(ctx,player.getX(),player.getY(),25,player.getColor());
-            drawImage(ctx,player_image,player.getX(),player.getY());
-        }
+        player.draw(ctx);
     })
 }
 
@@ -115,17 +112,18 @@ function starting_game(){
                         movingPlayer.setX(data.x);
                         movingPlayer.setY(data.y);
                     }else
-                        players.push(new player(data.playerId,data.x,data.y,data.color));
+                        players.push(new player(data.playerId,data.x,data.y,data.color,player_image));
                 }
                 break;
             case "updateScore":
                 updateScores(data.info);
                 break;
-            case "moveCoin":
+            case "coinTouched":
                 if(coin){
                     coin.setX(data.x);
                     coin.setY(data.y);
                 }
+                try{players.find(element => element.id == data.playerId).justTouchedCoin()}catch(e){};
                 break;
             default: break;
         }
