@@ -109,7 +109,7 @@ function starting_game(){
                 }
                 break;
             case "movePlayer":
-                if(data.playerId != perso.getId()){
+                if(perso && data.playerId != perso.getId()){
                     movingPlayer = players.find(element => element.getId() == data.playerId);
                     if(movingPlayer != undefined){
                         movingPlayer.setX(data.x);
