@@ -3,6 +3,14 @@ const express = require("express");
 
 const PORT = process.env.PORT || 3000; //The port will automaticly be 3000 on localhost, but if you use a host, like heroku, it might change
 
+/*   _
+    / \
+   / | \   You need to go to localhost:3000 for testing
+  /  |  \  Or else the external files won't be found by th program
+ /   .   \ But the index.html will as it's everything not specified
+/_________\
+ */
+
 const INDEX = '/index.html';//the index of the website, for the client
 const FILES = //Any files refered to in the client
     [
