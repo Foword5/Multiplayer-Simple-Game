@@ -1,5 +1,4 @@
-# Stupid Game Multiplayer
-## The multiplayer version of the stupid Game
+# Simple Game Multiplayer
+## The multiplayer version of the simple Game
 
-The same stupid game but with multiple player and no ennemies, to try out the web sockets,<br />
-You can test the game at https://stupid-game-multiplayer.herokuapp.com/ (before November 2022)
+The same simple game but with multiple player and no ennemies, to try out the web sockets,<br />
